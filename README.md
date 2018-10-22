@@ -138,3 +138,61 @@ still be compilable with cmake and make./
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
+
+#  Rubric
+
+## Compilation
+
+### The code compiles correctly.
+
+No changes were made in the cmake configuration. A new file was added [src/spline.h](./scr/spline.h) as mentioned in the lectures
+
+## Valid trajectories
+
+### The car is able to drive at least 4.32 miles without incident.
+I ran the simulator for 10 miles without incidents:
+
+### The car drives according to the speed limit.
+No speed limit red message was seen.
+
+### Max Acceleration and Jerk are not Exceeded.
+Max jerk red message was not seen.
+
+### Car does not have collisions.
+No collisions.
+
+### The car stays in its lane, except for the time between changing lanes.
+### The car is able to change lanes
+The car change lanes when the there is a slow car in front of it,  comes back to center lane when possible
+
+## Reflection
+
+Based on the provided code from the seed project, the path planning algorithms start at
+The code is split into 3 parts prediction, behaviour and trajectory
+
+### Prediction
+This uses the sensor fustion data to check if there is a care `is_in_car_same_lane`, `is_car_in_right_lane` and `is_car_in_left lane`.
+To do this the other car's `s` and `d` values in sensor fusion data is used. Using the `d` values the lane is calculated. Further using `s` values the other car is considered dangerous if it is within 30 m
+This is done between lines [src/main.cpp](./src/main.cpp#L301)
+
+### Behavior 
+Using the above data we control the `lane` or `speed` of our car
+If there is a car in my lane, then
+ - try to switch lanes if possible
+ else
+ - slow down my car
+
+If there is no car in my lane,
+  - check for car in in center lane and switch if possible
+This logic is in line [src/main.cpp](./src/main.cpp#L366)
+
+### Trajectory 
+The above data is used to calculate the trajectory
+First we create a spline. For the spline use,
+ - two points from previous trajectory
+ - 3 points at distance 30m 60m and 90m
+The above logic is in line [line 394 to line 493](./src/main.cpp#L313)
+For making math simple these points are transformed to car's coordinates [line 435](./src/main.cpp#L435)
+Now to create trajectories
+- For continuous trajectories, the previous points are copies
+- Rest of points are calculated evaluating the spline
